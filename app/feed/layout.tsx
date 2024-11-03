@@ -18,6 +18,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconHome, IconNotification, IconSettings } from "@tabler/icons-react";
 import { theme } from "../../theme";
+import Logo from "@/components/Logo/Logo";
 
 export default function FeedLayout({ children }: { children: any }) {
   const [opened, { toggle }] = useDisclosure();
@@ -36,7 +37,7 @@ export default function FeedLayout({ children }: { children: any }) {
         <AppShell.Header p="md" display="flex">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Flex direction="row" align="center" justify="flex-start" w="100%">
-            <b>SDDKD</b>
+            <Logo />
 
             <Button ml="auto">
                 <b>Get new task</b>
