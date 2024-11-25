@@ -23,7 +23,6 @@ import { useRouter } from 'next/navigation';
 import { DatePickerInput } from "@mantine/dates";
 import { useState, useEffect } from "react";
 import { useForm } from '@mantine/form';
-import { redirect } from "next/dist/server/api-utils";
 
 // const topics = ["⛩️ Anime", "⚽ Sport", "🌳 Nature", "🏛️ Architecture"];
 

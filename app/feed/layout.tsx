@@ -19,9 +19,35 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconHome, IconNotification, IconSettings } from "@tabler/icons-react";
 import { theme } from "../../theme";
 import Logo from "@/components/Logo/Logo";
+import { useEffect } from "react";
+
+// async function createTask() {
+//   resp = await fetch("http://localhost:8000/api/tasks/create-task", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       user: user.id,
+//     }),
+//   });
+// }
 
 export default function FeedLayout({ children }: { children: any }) {
   const [opened, { toggle }] = useDisclosure();
+  const [user, setUser] = React.useState<any | null>(null);
+
+  useEffect(() => {
+    // get user from local storage
+    const userLS = localStorage.getItem("user");
+    if (userLS === null) {
+      window.location.href = "/login";
+    } else {
+      console.log(userLS);
+
+      setUser(JSON.parse(userLS));
+    }
+  }, []);
 
   return (
     <MantineProvider theme={theme}>
@@ -40,7 +66,7 @@ export default function FeedLayout({ children }: { children: any }) {
             <Logo />
 
             <Button ml="auto">
-                <b>Get new task</b>
+              <b>Get new task</b>
             </Button>
           </Flex>
         </AppShell.Header>
@@ -66,16 +92,42 @@ export default function FeedLayout({ children }: { children: any }) {
               />
             </Container>
 
-            <Container w="100%" mt="auto" style={{ marginTop: "auto" }} p="md">
-              <Divider />
-              <Flex mt="1rem">
-                <Avatar size="md" radius="xl" src="https://i.pravatar.cc/300" />
-                <Flex direction="column" ml="md">
-                  <b>Maria Korsefighter</b>
-                  @username
+            {user && (
+              <Container
+                w="100%"
+                mt="auto"
+                style={{ marginTop: "auto" }}
+                p="md"
+              >
+                <Divider />
+                <Flex mt="1rem">
+                  <Avatar
+                    size="md"
+                    radius="xl"
+                    name={user.username}
+                    color="initials"
+                  />
+                  <Flex direction="column" ml="md">
+                    <b>{user.first_name} {user.last_name}</b>
+                    @{user.username}
+                    {/* logout button */}
+                    <Button
+                      variant="light"
+                      onClick={() => {
+                        localStorage.removeItem("user");
+                        window.location.href = "/login";
+                        fetch("http://localhost:8000/api/auth/logout/", {
+                          method: "POST",
+                        }
+                        )
+                      }}
+                    >
+                      Logout
+                      </Button>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Container>
+              </Container>
+            )}
           </Flex>
         </AppShell.Navbar>
 

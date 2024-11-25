@@ -6,8 +6,8 @@ import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
 
 export const metadata = {
-  title: 'Mantine Next.js template',
-  description: 'I am using Mantine with Next.js!',
+  title: 'SDDKD',
+  description: 'SSDKD',
 };
 
 export default function RootLayout({ children }: { children: any }) {
