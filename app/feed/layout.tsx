@@ -14,27 +14,20 @@ import {
   Avatar,
   Container,
   Divider,
+  Modal,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconHome, IconNotification, IconSettings } from "@tabler/icons-react";
 import { theme } from "../../theme";
 import Logo from "@/components/Logo/Logo";
 import { useEffect } from "react";
-
-// async function createTask() {
-//   resp = await fetch("http://localhost:8000/api/tasks/create-task", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       user: user.id,
-//     }),
-//   });
-// }
+import { CreateTaskForm } from "@/components/CreateTaskForm/CreateTaskForm";
 
 export default function FeedLayout({ children }: { children: any }) {
   const [opened, { toggle }] = useDisclosure();
+
+  const [createTaskOpened, { open, close }] = useDisclosure(false);
+
   const [user, setUser] = React.useState<any | null>(null);
 
   useEffect(() => {
@@ -64,8 +57,10 @@ export default function FeedLayout({ children }: { children: any }) {
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Flex direction="row" align="center" justify="flex-start" w="100%">
             <Logo />
-
-            <Button ml="auto">
+            <Modal opened={createTaskOpened} onClose={close} title="Create a new task">
+              <CreateTaskForm close={close} />
+            </Modal>
+            <Button onClick={open} ml="auto">
               <b>Get new task</b>
             </Button>
           </Flex>
