@@ -1,10 +1,11 @@
 'use client';
 
-import { AppShell, Burger, Container, Divider, Flex, Title, Text, Blockquote } from '@mantine/core';
+import { AppShell, Burger, Container, Divider, Flex, Title, Text, Blockquote, Image, useMantineTheme, SimpleGrid, NavLink, Avatar, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { cookies } from 'next/headers';
 import { useInterval } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
+import { CreatePost } from '@/components/CreatePost/CreatePost';
 
 function calculateTimeDifference(startedAt: string, timeRequirements: string): string {
   const startTime = new Date(startedAt);
@@ -38,7 +39,7 @@ function calculateTimeDifference(startedAt: string, timeRequirements: string): s
   const diffMinutes = Math.floor((timeDifferenceMs / (1000 * 60)) % 60);
   const diffHours = Math.floor((timeDifferenceMs / (1000 * 60 * 60)) % 24);
 
-  return `${isCurrentTimeAfterFinish && "-"}${diffHours.toString().padStart(2, '0')}:${diffMinutes
+  return `${isCurrentTimeAfterFinish ? "-" : ""}${diffHours.toString().padStart(2, '0')}:${diffMinutes
     .toString()
     .padStart(2, '0')}:${diffSeconds.toString().padStart(2, '0')}`;
 }
@@ -70,22 +71,26 @@ function decrementTimeString(timeString: string): string {
     hours -= crement;
   }
 
-  return `${hours.toString().padStart(2, '0')}:${minutes
+  return `${timeString[0] === '-' ? "-" : ""}${hours.toString().padStart(2, '0')}:${minutes
     .toString()
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 export default function Feed() {
+
   const [timeDifference, setTimeDifference] = useState<string | null>(null);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<any[] | null>(null);
   const [currentTask, setCurrentTask] = useState<any | null>(null);
 
   const interval = useInterval(() => setTimeDifference(decrementTimeString(timeDifference || "")), 1000);
 
   useEffect(() => {
+    if (!timeDifference) {
+      return;
+    }
     interval.start();
     return interval.stop;
-  }, []);
+  }, [timeDifference]);
 
   useEffect(() => {
     fetch('http://localhost:8000/api/users-tasks/current-user/', {
@@ -98,6 +103,9 @@ export default function Feed() {
       throw new Error('Failed to get current user tasks');
     }).then((data) => {
       console.log('Current user tasks:', data);
+      if (data.length === 0) {
+        return;
+      }
       setCurrentTask(data[0]);
       setTimeDifference(calculateTimeDifference(data[0].started_at, data[0].task.time_requirements));
     }).catch((error) => {
@@ -107,7 +115,7 @@ export default function Feed() {
   , []);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/posts/', {
+    fetch('http://localhost:8000/api/posts/random/', {
       method: 'GET',
       credentials: 'include',
     })
@@ -129,16 +137,19 @@ export default function Feed() {
   }, []);
 
   return (
-    <Container p="xs" w="100%" h="100%">
+    <Container w="100%" h="100%">
       <Flex direction="column">
         {
           currentTask &&
           <>
-          <Container w="100%" pb="xl">
+          <Container w="100%" pb="sm">
             <Blockquote>
               <Text>Your current task: {currentTask.task.name}</Text>
               <Text>Description: {currentTask.task.description}</Text>
               <Text>Time left: {timeDifference}</Text>
+              <Container mt={"15px"} p="0">
+                <CreatePost />
+              </Container>
             </Blockquote>
           </Container>
           <Divider />
@@ -147,16 +158,37 @@ export default function Feed() {
         
         {
           posts && posts.length > 0 ? 
-          posts.map((post) => {
-              return (
-                <div key={post.id}>
-                  <h1>{post.title}</h1>
-                  <p>{post.content}</p>
-                </div>
-              );
-          })
-          : 
-          <Title>No posts...</Title>
+          <SimpleGrid cols={3} spacing="xs">
+            {
+              posts.map((post) => {
+                return (
+                  <Flex key={post.id} direction="column" p="lg" gap="md" justify={"center"} align={"flex-start"} w={"100%"}>
+                    <Image src={post.image_base64} radius={'xl'}/>
+                    <Flex direction={"column"} ml={"1rem"}>
+                      {post.task.name} 
+                      <Space h={"0.5rem"} />
+                      <Flex direction="row" gap="xs">
+                          <Avatar
+                            size="sm"
+                            radius="xl"
+                            name={post.user}
+                            color="initials"
+                          />
+                          {post.user}
+                      </Flex>
+                    </Flex>
+                  </Flex>
+                );
+            })
+            }
+          </SimpleGrid>
+          :
+          (
+            posts && posts.length === 0 ?
+            <Title>No posts...</Title>
+            :
+            <Title mt={"10px"}>Loading...</Title>
+          )
         }
       </Flex>
 

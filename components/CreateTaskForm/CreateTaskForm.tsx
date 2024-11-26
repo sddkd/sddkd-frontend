@@ -10,20 +10,25 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 async function createTask(formData: any) {
-  let resp = await fetch("http://localhost:8000/api/users-tasks/create-user-task/", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  let resp = await fetch(
+    "http://localhost:8000/api/users-tasks/create-user-task/",
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         task: parseInt(formData.task),
         user: -1,
-    }),
-  });
+      }),
+    }
+  );
 
   if (resp.ok) {
     return await resp.json();
@@ -33,6 +38,8 @@ async function createTask(formData: any) {
 export function CreateTaskForm(props: any) {
   const [topics, setTopic] = useState<any>([]);
   const [tasks, setTasks] = useState<any[]>([]);
+
+  const router = useRouter();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -57,7 +64,7 @@ export function CreateTaskForm(props: any) {
     };
 
     fetch("http://localhost:8000/api/topics/", {
-        credentials: "include",
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setTopic(preprocessTopics(data)));
@@ -77,9 +84,12 @@ export function CreateTaskForm(props: any) {
       });
     };
 
-    fetch(`http://localhost:8000/api/tasks/topic/${form.getValues()["topic"]}/`, {
+    fetch(
+      `http://localhost:8000/api/tasks/topic/${form.getValues()["topic"]}/`,
+      {
         credentials: "include",
-    })
+      }
+    )
       .then((response) => response.json())
       .then((data) => setTasks(preprocessTasks(data)));
   }, [form.getValues()["topic"]]);
@@ -111,10 +121,15 @@ export function CreateTaskForm(props: any) {
       />
 
       <Button
-      onClick={() => {
-        createTask(form.getValues());
-        props.closeModal();
-      }}
+        onClick={() => {
+          createTask(form.getValues());
+          props.closeModal();
+          notifications.show({
+            title: "Task created",
+            message: "You have successfully created a new task, reload the page to see it",
+            color: "teal",
+          });
+        }}
       >
         Create Task
       </Button>

@@ -1,9 +1,12 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/dropzone/styles.css';
+import '@mantine/notifications/styles.css';
 
 import React from 'react';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
+import { Notifications } from '@mantine/notifications';
 
 export const metadata = {
   title: 'SDDKD',
@@ -22,7 +25,10 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body style={{width: "100%", height: "100%"}}>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <Notifications />
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );

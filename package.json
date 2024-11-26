@@ -21,8 +21,10 @@
   "dependencies": {
     "@mantine/core": "7.13.4",
     "@mantine/dates": "^7.13.4",
+    "@mantine/dropzone": "^7.14.2",
     "@mantine/form": "^7.14.1",
     "@mantine/hooks": "7.13.4",
+    "@mantine/notifications": "^7.14.2",
     "@next/bundle-analyzer": "^14.2.4",
     "@tabler/icons-react": "^3.6.0",
     "next": "15.0.1",

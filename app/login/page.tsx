@@ -16,13 +16,18 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useForm } from '@mantine/form';
+import { notifications } from "@mantine/notifications";
+import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 
 
-export default function LoginPage() {
+export default function LoginPage(props: any) {
   const theme = useMantineTheme();
   const [failedToLogin, setFailedToLogin] = useState(false);
+
+  const searchParams = useSearchParams();
+  const afterRegister = searchParams.get("afterRegister");
 
   const form = useForm({
     initialValues: {
@@ -30,6 +35,16 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (afterRegister) {
+      notifications.show({
+        title: "Registration successful",
+        message: "You can now login using your credentials",
+        color: "green",
+      });
+    }
+  }, [afterRegister]);
 
   const login = async (formData: any) => {
     fetch("http://localhost:8000/auth/login/", {

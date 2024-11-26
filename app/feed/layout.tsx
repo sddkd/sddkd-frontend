@@ -15,6 +15,8 @@ import {
   Container,
   Divider,
   Modal,
+  ScrollArea,
+  useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconHome, IconNotification, IconSettings } from "@tabler/icons-react";
@@ -22,8 +24,11 @@ import { theme } from "../../theme";
 import Logo from "@/components/Logo/Logo";
 import { useEffect } from "react";
 import { CreateTaskForm } from "@/components/CreateTaskForm/CreateTaskForm";
+import { useRouter } from "next/navigation";
 
 export default function FeedLayout({ children }: { children: any }) {
+  const theme = useMantineTheme();
+
   const [opened, { toggle }] = useDisclosure();
 
   const [createTaskOpened, { open, close }] = useDisclosure(false);
@@ -31,7 +36,6 @@ export default function FeedLayout({ children }: { children: any }) {
   const [user, setUser] = React.useState<any | null>(null);
 
   useEffect(() => {
-    // get user from local storage
     const userLS = localStorage.getItem("user");
     if (userLS === null) {
       window.location.href = "/login";
@@ -58,7 +62,7 @@ export default function FeedLayout({ children }: { children: any }) {
           <Flex direction="row" align="center" justify="flex-start" w="100%">
             <Logo />
             <Modal opened={createTaskOpened} onClose={close} title="Create a new task">
-              <CreateTaskForm close={close} />
+              <CreateTaskForm closeModal={() => {close()}} />
             </Modal>
             <Button onClick={open} ml="auto">
               <b>Get new task</b>
@@ -75,7 +79,7 @@ export default function FeedLayout({ children }: { children: any }) {
           >
             <Container w="100%">
               <NavLink href="/feed" label="Feed" leftSection={<IconHome />} />
-              <NavLink
+              {/* <NavLink
                 href="/notifications"
                 label="Notifications"
                 leftSection={<IconNotification />}
@@ -84,7 +88,7 @@ export default function FeedLayout({ children }: { children: any }) {
                 href="/settings"
                 label="Settings"
                 leftSection={<IconSettings />}
-              />
+              /> */}
             </Container>
 
             {user && (
@@ -126,7 +130,11 @@ export default function FeedLayout({ children }: { children: any }) {
           </Flex>
         </AppShell.Navbar>
 
-        <AppShell.Main>{children}</AppShell.Main>
+        <AppShell.Main bg={theme.colors[theme.primaryColor][0] }>
+          <ScrollArea h = "100vh">
+            {children}
+          </ScrollArea>
+        </AppShell.Main>
       </AppShell>
     </MantineProvider>
   );

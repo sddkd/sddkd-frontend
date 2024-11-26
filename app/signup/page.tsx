@@ -166,7 +166,7 @@ export default function SignUpPage() {
     let resp = await sendRegisterRequest({...form.getValues()})
     if (resp.ok) {
       console.log("Success");
-      router.push("/login");
+      router.push("/login?afterRegister=true");
     } else {
       let data = await resp.json();
       console.log(data);
